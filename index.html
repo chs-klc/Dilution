@@ -484,82 +484,6 @@
             <h2 class="text-3xl font-bold text-slate-800 mb-2">Misconception Lab: Rinsing the Volumetric Flask</h2>
             <p class="text-slate-600 mb-6">Step through this interactive simulation to see <em>exactly why</em> rinsing a volumetric flask with stock solution gives the wrong final concentration.</p>
 
-            <!-- Step dots -->
-            <div class="flex items-center justify-center gap-3 mb-5" id="rinse-dots"></div>
-
-            <!-- Step info -->
-            <div class="text-center mb-6 min-h-[60px]">
-                <h3 class="text-xl font-bold text-slate-800" id="rinse-title"></h3>
-                <p class="text-slate-500 text-sm mt-1 max-w-2xl mx-auto leading-relaxed" id="rinse-desc"></p>
-            </div>
-
-            <!-- Two flask canvases -->
-            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                <div class="rounded-xl overflow-hidden border-2 border-red-300 shadow-sm">
-                    <div class="bg-red-100 px-4 py-2 flex items-center gap-2 border-b border-red-200">
-                        <i class="fa-solid fa-xmark text-red-600"></i>
-                        <span class="font-bold text-red-800 text-sm">Wrong: Rinse with stock solution</span>
-                    </div>
-                    <div class="bg-slate-900 flex flex-col items-center py-4">
-                        <canvas id="canvas-wrong" width="200" height="310" style="display:block;"></canvas>
-                        <p id="wrong-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
-                    </div>
-                </div>
-                <div class="rounded-xl overflow-hidden border-2 border-green-300 shadow-sm">
-                    <div class="bg-green-100 px-4 py-2 flex items-center gap-2 border-b border-green-200">
-                        <i class="fa-solid fa-check text-green-600"></i>
-                        <span class="font-bold text-green-800 text-sm">Correct: Rinse with distilled water</span>
-                    </div>
-                    <div class="bg-slate-900 flex flex-col items-center py-4">
-                        <canvas id="canvas-right" width="200" height="310" style="display:block;"></canvas>
-                        <p id="right-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Result panel (shown on last step) -->
-            <div id="rinse-result" style="display:none;" class="md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-red-50 border border-red-200 rounded-xl p-5">
-                    <h4 class="font-bold text-red-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-xmark"></i> Wrong Method — Concentration Too High</h4>
-                    <div class="bg-white rounded-lg p-3 border border-red-100 font-mono text-sm space-y-1">
-                        <div class="text-slate-600">Pipetted moles: <span class="text-slate-800 font-bold">0.025 mol</span></div>
-                        <div class="text-red-600">Residue moles:  <span class="font-bold">≈ +0.003 mol</span></div>
-                        <div class="border-t pt-1">Total n ≈ <span class="font-bold">0.028 mol</span></div>
-                        <div class="text-red-700 font-bold text-base">M₂ = 0.028 ÷ 0.250 ≈ 0.112 M ✗</div>
-                    </div>
-                    <p class="text-xs text-red-700 mt-2 leading-relaxed">Residual solute from the stock-solution rinse dissolved into the final solution, adding extra moles and raising the concentration above the intended 0.100 M.</p>
-                </div>
-                <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-                    <h4 class="font-bold text-green-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-check"></i> Correct Method — Exact Concentration</h4>
-                    <div class="bg-white rounded-lg p-3 border border-green-100 font-mono text-sm space-y-1">
-                        <div class="text-slate-600">Pipetted moles: <span class="text-slate-800 font-bold">0.025 mol</span></div>
-                        <div class="text-green-600">Residue moles:  <span class="font-bold">0.000 mol</span></div>
-                        <div class="border-t pt-1">Total n = <span class="font-bold">0.025 mol</span></div>
-                        <div class="text-green-700 font-bold text-base">M₂ = 0.025 ÷ 0.250 = 0.100 M ✓</div>
-                    </div>
-                    <p class="text-xs text-green-700 mt-2 leading-relaxed">Clean glass means only the pipetted moles are present. The concentration is exactly 0.100 M as designed.</p>
-                </div>
-            </div>
-
-            <!-- Nav buttons -->
-            <div class="flex justify-center items-center gap-4">
-                <button id="rinse-prev" disabled class="bg-slate-200 hover:bg-slate-300 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 px-5 py-2 rounded-full font-medium transition-colors text-sm">
-                    <i class="fa-solid fa-arrow-left mr-1"></i> Previous
-                </button>
-                <button id="rinse-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-medium transition-colors text-sm">
-                    Next Step <i class="fa-solid fa-arrow-right ml-1"></i>
-                </button>
-                <button id="rinse-restart" style="display:none;" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-full font-medium transition-colors text-sm">
-                    <i class="fa-solid fa-rotate-left mr-1"></i> Restart
-                </button>
-            </div>
-        </section>
-
-        <!-- 8. RINSE SIMULATION TAB -->
-        <section id="rinsesim" class="tab-content">
-            <h2 class="text-3xl font-bold text-slate-800 mb-2">Misconception Lab: Rinsing the Volumetric Flask</h2>
-            <p class="text-slate-600 mb-6">Step through this interactive simulation to see <em>exactly why</em> rinsing a volumetric flask with stock solution gives the wrong final concentration.</p>
-
             <div class="flex items-center justify-center gap-3 mb-5" id="rinse-dots"></div>
 
             <div class="text-center mb-6 min-h-[60px]">
@@ -573,9 +497,9 @@
                         <i class="fa-solid fa-xmark text-red-600"></i>
                         <span class="font-bold text-red-800 text-sm">Wrong: Rinse with stock solution</span>
                     </div>
-                    <div class="bg-slate-900 flex flex-col items-center py-4">
-                        <canvas id="canvas-wrong" width="200" height="310" style="display:block;"></canvas>
-                        <p id="wrong-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
+                    <div class="bg-slate-900">
+                        <canvas id="canvas-wrong" width="200" height="310" style="display:block;width:100%;height:auto;"></canvas>
+                        <p id="wrong-label" style="padding:4px 8px;" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
                     </div>
                 </div>
                 <div class="rounded-xl overflow-hidden border-2 border-green-300 shadow-sm">
@@ -583,9 +507,9 @@
                         <i class="fa-solid fa-check text-green-600"></i>
                         <span class="font-bold text-green-800 text-sm">Correct: Rinse with distilled water</span>
                     </div>
-                    <div class="bg-slate-900 flex flex-col items-center py-4">
-                        <canvas id="canvas-right" width="200" height="310" style="display:block;"></canvas>
-                        <p id="right-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
+                    <div class="bg-slate-900">
+                        <canvas id="canvas-right" width="200" height="310" style="display:block;width:100%;height:auto;"></canvas>
+                        <p id="right-label" style="padding:4px 8px;" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
                     </div>
                 </div>
             </div>
@@ -674,13 +598,6 @@
                 }
 
                 // Start/stop the rinse simulation
-                if (targetId === 'rinsesim') {
-                    setTimeout(() => { if (window.startRinseSim) window.startRinseSim(); }, 80);
-                } else {
-                    if (window.stopRinseSim) window.stopRinseSim();
-                }
-
-                // Start rinse simulation when that tab is opened
                 if (targetId === 'rinsesim') {
                     setTimeout(() => { if (window.startRinseSim) window.startRinseSim(); }, 80);
                 } else {
@@ -1333,6 +1250,12 @@
 
             initStates();
             applyStep(0);
+            // Draw initial static frame so flasks are visible before the animation starts
+            (function () {
+                const wc = document.getElementById('canvas-wrong');
+                const rc = document.getElementById('canvas-right');
+                if (wc && rc) { drawFlask(wc, wrongState); drawFlask(rc, rightState); }
+            }());
         }());
 
     </script>
