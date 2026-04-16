@@ -1177,30 +1177,24 @@
             function drawFlask(canvas, state) {
                 var ctx = canvas.getContext('2d');
                 var W = canvas.width, H = canvas.height;
+                var liquidTopY, g, mR, d;
 
-                // DEBUG: bright background to prove drawing works
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(0, 0, W, H);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '16px sans-serif';
-                ctx.fillText('W=' + W + ' H=' + H + ' fill=' + state.fill.toFixed(2), 5, 20);
-
-                // Canvas background
+                // Dark background
                 ctx.fillStyle = '#0f172a';
-                ctx.fillRect(10, 40, W - 20, H - 50);
+                ctx.fillRect(0, 0, W, H);
 
-                // Flask glass body fill (always visible)
+                // Flask glass body (always visible)
                 flaskPath(ctx);
-                ctx.fillStyle = 'rgba(30,60,100,0.55)';
+                ctx.fillStyle = 'rgba(30,60,100,0.6)';
                 ctx.fill();
 
                 // Liquid fill
                 if (state.fill > 0.002) {
-                    const topY = fY(state.fill);
+                    liquidTopY = fY(state.fill);
                     ctx.save();
                     flaskPath(ctx);
                     ctx.clip();
-                    const g = ctx.createLinearGradient(0, topY, 0, BULB_BOT_Y);
+                    g = ctx.createLinearGradient(0, liquidTopY, 0, BULB_BOT_Y);
                     if (state.isStock) {
                         g.addColorStop(0, 'rgba(59,130,246,0.80)');
                         g.addColorStop(1, 'rgba(29,78,216,0.95)');
@@ -1209,23 +1203,23 @@
                         g.addColorStop(1, 'rgba(147,197,253,0.85)');
                     }
                     ctx.fillStyle = g;
-                    ctx.fillRect(0, topY, W, H);
+                    ctx.fillRect(0, liquidTopY, W, H);
                     ctx.restore();
                 }
 
                 // Residue dots
                 if (state.showResidue) {
                     RESIDUE_PTS.forEach(function(p) {
-                        ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2);
+                        ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
                         ctx.fillStyle = '#f59e0b'; ctx.fill();
                     });
                 }
 
                 // Particles
-                const topY = fY(state.fill);
+                liquidTopY = fY(state.fill);
                 state.particles.forEach(function(p) {
-                    if (p.y < topY - 3) return;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI*2);
+                    if (p.y < liquidTopY - 3) return;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
                     ctx.fillStyle = '#fbbf24'; ctx.fill();
                     ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 0.8; ctx.stroke();
                 });
@@ -1280,20 +1274,10 @@
 
             initStates();
             applyStep(0);
-            // Draw initial static frame so flasks are visible before the animation starts
-            (function () {
-                var wc = document.getElementById('canvas-wrong');
-                var rc = document.getElementById('canvas-right');
-                // DEBUG: draw bright red rect to confirm canvas works
-                if (wc) {
-                    var c = wc.getContext('2d');
-                    c.fillStyle = 'red';
-                    c.fillRect(0, 0, wc.width, wc.height);
-                    c.fillStyle = 'white'; c.font = '20px sans-serif';
-                    c.fillText('CANVAS OK w=' + wc.width + ' h=' + wc.height, 10, 30);
-                }
-                if (wc && rc) { drawFlask(wc, wrongState); drawFlask(rc, rightState); }
-            }());
+            // Draw initial static frame
+            var _wc = document.getElementById('canvas-wrong');
+            var _rc = document.getElementById('canvas-right');
+            if (_wc && _rc) { drawFlask(_wc, wrongState); drawFlask(_rc, rightState); }
         }());
 
     </script>
