@@ -108,6 +108,9 @@
             <button class="tab-btn px-4 py-3 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-blue-600 hover:bg-slate-50 transition-colors" data-target="misconceptions">
                 <i class="fa-solid fa-triangle-exclamation mr-2"></i>Misconceptions
             </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-blue-600 hover:bg-slate-50 transition-colors" data-target="rinsesim">
+                <i class="fa-solid fa-vial-circle-check mr-2"></i>Rinse Lab
+            </button>
             <button class="tab-btn px-4 py-3 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-blue-600 hover:bg-slate-50 transition-colors" data-target="summary">
                 <i class="fa-solid fa-list-check mr-2"></i>Summary
             </button>
@@ -476,6 +479,153 @@
             </div>
         </section>
 
+        <!-- 8. RINSE SIMULATION TAB -->
+        <section id="rinsesim" class="tab-content">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Misconception Lab: Rinsing the Volumetric Flask</h2>
+            <p class="text-slate-600 mb-6">Step through this interactive simulation to see <em>exactly why</em> rinsing a volumetric flask with stock solution gives the wrong final concentration.</p>
+
+            <!-- Step dots -->
+            <div class="flex items-center justify-center gap-3 mb-5" id="rinse-dots"></div>
+
+            <!-- Step info -->
+            <div class="text-center mb-6 min-h-[60px]">
+                <h3 class="text-xl font-bold text-slate-800" id="rinse-title"></h3>
+                <p class="text-slate-500 text-sm mt-1 max-w-2xl mx-auto leading-relaxed" id="rinse-desc"></p>
+            </div>
+
+            <!-- Two flask canvases -->
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="rounded-xl overflow-hidden border-2 border-red-300 shadow-sm">
+                    <div class="bg-red-100 px-4 py-2 flex items-center gap-2 border-b border-red-200">
+                        <i class="fa-solid fa-xmark text-red-600"></i>
+                        <span class="font-bold text-red-800 text-sm">Wrong: Rinse with stock solution</span>
+                    </div>
+                    <div class="bg-slate-900 flex flex-col items-center py-4">
+                        <canvas id="canvas-wrong" width="200" height="310" style="display:block;"></canvas>
+                        <p id="wrong-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
+                    </div>
+                </div>
+                <div class="rounded-xl overflow-hidden border-2 border-green-300 shadow-sm">
+                    <div class="bg-green-100 px-4 py-2 flex items-center gap-2 border-b border-green-200">
+                        <i class="fa-solid fa-check text-green-600"></i>
+                        <span class="font-bold text-green-800 text-sm">Correct: Rinse with distilled water</span>
+                    </div>
+                    <div class="bg-slate-900 flex flex-col items-center py-4">
+                        <canvas id="canvas-right" width="200" height="310" style="display:block;"></canvas>
+                        <p id="right-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result panel (shown on last step) -->
+            <div id="rinse-result" style="display:none;" class="md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+                    <h4 class="font-bold text-red-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-xmark"></i> Wrong Method — Concentration Too High</h4>
+                    <div class="bg-white rounded-lg p-3 border border-red-100 font-mono text-sm space-y-1">
+                        <div class="text-slate-600">Pipetted moles: <span class="text-slate-800 font-bold">0.025 mol</span></div>
+                        <div class="text-red-600">Residue moles:  <span class="font-bold">≈ +0.003 mol</span></div>
+                        <div class="border-t pt-1">Total n ≈ <span class="font-bold">0.028 mol</span></div>
+                        <div class="text-red-700 font-bold text-base">M₂ = 0.028 ÷ 0.250 ≈ 0.112 M ✗</div>
+                    </div>
+                    <p class="text-xs text-red-700 mt-2 leading-relaxed">Residual solute from the stock-solution rinse dissolved into the final solution, adding extra moles and raising the concentration above the intended 0.100 M.</p>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+                    <h4 class="font-bold text-green-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-check"></i> Correct Method — Exact Concentration</h4>
+                    <div class="bg-white rounded-lg p-3 border border-green-100 font-mono text-sm space-y-1">
+                        <div class="text-slate-600">Pipetted moles: <span class="text-slate-800 font-bold">0.025 mol</span></div>
+                        <div class="text-green-600">Residue moles:  <span class="font-bold">0.000 mol</span></div>
+                        <div class="border-t pt-1">Total n = <span class="font-bold">0.025 mol</span></div>
+                        <div class="text-green-700 font-bold text-base">M₂ = 0.025 ÷ 0.250 = 0.100 M ✓</div>
+                    </div>
+                    <p class="text-xs text-green-700 mt-2 leading-relaxed">Clean glass means only the pipetted moles are present. The concentration is exactly 0.100 M as designed.</p>
+                </div>
+            </div>
+
+            <!-- Nav buttons -->
+            <div class="flex justify-center items-center gap-4">
+                <button id="rinse-prev" disabled class="bg-slate-200 hover:bg-slate-300 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 px-5 py-2 rounded-full font-medium transition-colors text-sm">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Previous
+                </button>
+                <button id="rinse-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-medium transition-colors text-sm">
+                    Next Step <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+                <button id="rinse-restart" style="display:none;" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-full font-medium transition-colors text-sm">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Restart
+                </button>
+            </div>
+        </section>
+
+        <!-- 8. RINSE SIMULATION TAB -->
+        <section id="rinsesim" class="tab-content">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Misconception Lab: Rinsing the Volumetric Flask</h2>
+            <p class="text-slate-600 mb-6">Step through this interactive simulation to see <em>exactly why</em> rinsing a volumetric flask with stock solution gives the wrong final concentration.</p>
+
+            <div class="flex items-center justify-center gap-3 mb-5" id="rinse-dots"></div>
+
+            <div class="text-center mb-6 min-h-[60px]">
+                <h3 class="text-xl font-bold text-slate-800" id="rinse-title"></h3>
+                <p class="text-slate-500 text-sm mt-1 max-w-2xl mx-auto leading-relaxed" id="rinse-desc"></p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="rounded-xl overflow-hidden border-2 border-red-300 shadow-sm">
+                    <div class="bg-red-100 px-4 py-2 flex items-center gap-2 border-b border-red-200">
+                        <i class="fa-solid fa-xmark text-red-600"></i>
+                        <span class="font-bold text-red-800 text-sm">Wrong: Rinse with stock solution</span>
+                    </div>
+                    <div class="bg-slate-900 flex flex-col items-center py-4">
+                        <canvas id="canvas-wrong" width="200" height="310" style="display:block;"></canvas>
+                        <p id="wrong-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
+                    </div>
+                </div>
+                <div class="rounded-xl overflow-hidden border-2 border-green-300 shadow-sm">
+                    <div class="bg-green-100 px-4 py-2 flex items-center gap-2 border-b border-green-200">
+                        <i class="fa-solid fa-check text-green-600"></i>
+                        <span class="font-bold text-green-800 text-sm">Correct: Rinse with distilled water</span>
+                    </div>
+                    <div class="bg-slate-900 flex flex-col items-center py-4">
+                        <canvas id="canvas-right" width="200" height="310" style="display:block;"></canvas>
+                        <p id="right-label" class="text-xs font-mono mt-2 min-h-[16px] text-slate-400"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="rinse-result" style="display:none;" class="md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+                    <h4 class="font-bold text-red-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-xmark"></i> Wrong Method — Concentration Too High</h4>
+                    <div class="bg-white rounded-lg p-3 border border-red-100 font-mono text-sm space-y-1">
+                        <div class="text-slate-600">Pipetted moles: <span class="text-slate-800 font-bold">0.025 mol</span></div>
+                        <div class="text-red-600">Residue moles:  <span class="font-bold">≈ +0.003 mol</span></div>
+                        <div class="border-t pt-1">Total n ≈ <span class="font-bold">0.028 mol</span></div>
+                        <div class="text-red-700 font-bold text-base">M₂ = 0.028 ÷ 0.250 ≈ 0.112 M ✗</div>
+                    </div>
+                    <p class="text-xs text-red-700 mt-2 leading-relaxed">Residual solute from the stock-solution rinse dissolved into the final solution, adding extra moles and raising the concentration above the intended 0.100 M.</p>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+                    <h4 class="font-bold text-green-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-check"></i> Correct Method — Exact Concentration</h4>
+                    <div class="bg-white rounded-lg p-3 border border-green-100 font-mono text-sm space-y-1">
+                        <div class="text-slate-600">Pipetted moles: <span class="text-slate-800 font-bold">0.025 mol</span></div>
+                        <div class="text-green-600">Residue moles:  <span class="font-bold">0.000 mol</span></div>
+                        <div class="border-t pt-1">Total n = <span class="font-bold">0.025 mol</span></div>
+                        <div class="text-green-700 font-bold text-base">M₂ = 0.025 ÷ 0.250 = 0.100 M ✓</div>
+                    </div>
+                    <p class="text-xs text-green-700 mt-2 leading-relaxed">Clean glass means only the pipetted moles are present. The concentration is exactly 0.100 M as designed.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center gap-4">
+                <button id="rinse-prev" disabled class="bg-slate-200 hover:bg-slate-300 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 px-5 py-2 rounded-full font-medium transition-colors text-sm">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Previous
+                </button>
+                <button id="rinse-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-medium transition-colors text-sm">
+                    Next Step <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+                <button id="rinse-restart" style="display:none;" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-full font-medium transition-colors text-sm">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Restart
+                </button>
+            </div>
+        </section>
+
     </main>
 
     <footer class="bg-slate-800 text-slate-400 py-6 text-center text-sm mt-auto">
@@ -521,6 +671,20 @@
                             window.renderer.setSize(container.clientWidth, container.clientHeight);
                         }
                     }, 150); // 150ms ensures layout repaints across all major browsers
+                }
+
+                // Start/stop the rinse simulation
+                if (targetId === 'rinsesim') {
+                    setTimeout(() => { if (window.startRinseSim) window.startRinseSim(); }, 80);
+                } else {
+                    if (window.stopRinseSim) window.stopRinseSim();
+                }
+
+                // Start rinse simulation when that tab is opened
+                if (targetId === 'rinsesim') {
+                    setTimeout(() => { if (window.startRinseSim) window.startRinseSim(); }, 80);
+                } else {
+                    if (window.stopRinseSim) window.stopRinseSim();
                 }
             });
         });
@@ -938,6 +1102,238 @@
             // Sync UI text immediately
             updateLiquidState(25);
         };
+
+        // --- 5. RINSE SIMULATION ---
+        (function () {
+            'use strict';
+
+            // Flask geometry for a 200×310 canvas
+            const CX = 100;
+            const BULB_CY = 228, BULB_R = 68;
+            const NECK_HW = 13;
+            const NECK_TOP_Y = 22;
+            const NECK_BOT_Y = 160;
+            const GRAD_Y = 50;
+            const BULB_BOT_Y = 296;
+
+            function fY(f) { return BULB_BOT_Y - f * (BULB_BOT_Y - GRAD_Y); }
+
+            function innerR(y) {
+                if (y < NECK_BOT_Y) return NECK_HW - 2;
+                const dy = y - BULB_CY;
+                return Math.max(0, Math.sqrt(Math.max(0, BULB_R * BULB_R - dy * dy)) - 4);
+            }
+
+            const FLASK_PATH = (function () {
+                const p = new Path2D();
+                p.moveTo(CX - NECK_HW, NECK_TOP_Y);
+                p.lineTo(CX - NECK_HW, NECK_BOT_Y);
+                p.bezierCurveTo(CX - NECK_HW, NECK_BOT_Y + 32, CX - BULB_R, BULB_CY - 52, CX - BULB_R, BULB_CY);
+                p.arc(CX, BULB_CY, BULB_R, Math.PI, 0, false);
+                p.bezierCurveTo(CX + BULB_R, BULB_CY - 52, CX + NECK_HW, NECK_BOT_Y + 32, CX + NECK_HW, NECK_BOT_Y);
+                p.lineTo(CX + NECK_HW, NECK_TOP_Y);
+                p.closePath();
+                return p;
+            }());
+
+            const STEPS = [
+                { title: 'Start: Empty, Clean Flasks',
+                  desc: 'Both 250.0 cm³ volumetric flasks have been washed and are ready.',
+                  wFill:0, wRes:false, wPar:0, wStock:false, rFill:0, rRes:false, rPar:0, rStock:false,
+                  wLbl:'Empty flask', rLbl:'Empty flask', showResult:false },
+                { title: 'Step 1: Rinse the Flask',
+                  desc: 'A small amount of liquid is swirled inside each flask to coat the glass walls, then poured out.',
+                  wFill:0.30, wRes:false, wPar:10, wStock:true, rFill:0.30, rRes:false, rPar:0, rStock:false,
+                  wLbl:'Rinsing with 1.0 M stock solution…', rLbl:'Rinsing with distilled water…', showResult:false },
+                { title: 'Step 2: Empty the Rinse Liquid',
+                  desc: 'Both flasks are emptied. The wrong method leaves residual solute (amber dots) stuck to the glass walls — these will contaminate the final solution.',
+                  wFill:0, wRes:true, wPar:0, wStock:false, rFill:0, rRes:false, rPar:0, rStock:false,
+                  wLbl:'⚠ Residual solute clings to glass walls!', rLbl:'✓ Walls are spotlessly clean', showResult:false },
+                { title: 'Step 3: Transfer 25.0 cm³ of 1.0 M Stock Solution',
+                  desc: 'Using a burette, exactly 25.0 cm³ of 1.0 M stock is added to each flask: n = 1.0 × 0.025 = 0.025 mol (gold particles). Both flasks receive the same amount.',
+                  wFill:0.12, wRes:true, wPar:25, wStock:true, rFill:0.12, rRes:false, rPar:25, rStock:true,
+                  wLbl:'n added = 0.025 mol  (residue still on walls)', rLbl:'n added = 0.025 mol', showResult:false },
+                { title: 'Step 4: Fill to the 250.0 cm³ Graduation Mark',
+                  desc: 'Distilled water is added to the mark. As water rises in the wrong flask the wall residue dissolves — extra gold particles appear, representing the extra moles contaminating the solution.',
+                  wFill:1.0, wRes:false, wPar:31, wStock:false, rFill:1.0, rRes:false, rPar:25, rStock:false,
+                  wLbl:'Residue dissolved → n ≈ 0.028 mol total!', rLbl:'n = 0.025 mol — unchanged ✓', showResult:false },
+                { title: 'Result: Final Concentrations Compared',
+                  desc: 'Same volume, different moles. The wrong method produces a solution more concentrated than intended because the residual solute added extra moles.',
+                  wFill:1.0, wRes:false, wPar:31, wStock:false, rFill:1.0, rRes:false, rPar:25, rStock:false,
+                  wLbl:'M₂ ≈ 0.112 M ✗  (expected 0.100 M)', rLbl:'M₂ = 0.100 M ✓', showResult:true }
+            ];
+
+            const RESIDUE_PTS = (function () {
+                const pts = [];
+                for (let y = 70; y < NECK_BOT_Y - 5; y += 22) {
+                    pts.push({ x: CX - NECK_HW + 5 + Math.random()*3, y: y + Math.random()*8 });
+                    pts.push({ x: CX + NECK_HW - 5 - Math.random()*3, y: y + Math.random()*8 });
+                }
+                for (let a = 0.2; a < Math.PI * 2; a += 0.42) {
+                    const r = BULB_R - 7 + Math.random()*4;
+                    pts.push({ x: CX + r * Math.cos(a), y: BULB_CY + r * Math.sin(a) });
+                }
+                return pts;
+            }());
+
+            function makeParticles(count, fill) {
+                const pts = [], top = fY(Math.max(fill, 0.05));
+                let tries = 0;
+                while (pts.length < count && tries < count * 40) {
+                    tries++;
+                    const y = top + Math.random() * (BULB_BOT_Y - top);
+                    const mR = innerR(y);
+                    if (mR <= 0) continue;
+                    pts.push({ x: CX + (Math.random()*2-1)*mR, y,
+                                vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5 });
+                }
+                return pts;
+            }
+
+            let wrongState, rightState, currentStep = 0, simActive = false, animId = null;
+
+            function initStates() {
+                wrongState = { fill:0, targetFill:0, isStock:false, showResidue:false, particles:[] };
+                rightState = { fill:0, targetFill:0, isStock:false, showResidue:false, particles:[] };
+            }
+
+            function applyStep(step) {
+                const s = STEPS[step];
+                wrongState.targetFill  = s.wFill;
+                wrongState.showResidue = s.wRes;
+                wrongState.isStock     = s.wStock;
+                if (s.wPar > wrongState.particles.length)
+                    wrongState.particles.push(...makeParticles(s.wPar - wrongState.particles.length, Math.max(s.wFill,0.05)));
+                else wrongState.particles = wrongState.particles.slice(0, s.wPar);
+
+                rightState.targetFill  = s.rFill;
+                rightState.showResidue = s.rRes;
+                rightState.isStock     = s.rStock;
+                if (s.rPar > rightState.particles.length)
+                    rightState.particles.push(...makeParticles(s.rPar - rightState.particles.length, Math.max(s.rFill,0.05)));
+                else rightState.particles = rightState.particles.slice(0, s.rPar);
+
+                document.getElementById('rinse-title').textContent = s.title;
+                document.getElementById('rinse-desc').textContent  = s.desc;
+
+                const wl = document.getElementById('wrong-label');
+                wl.textContent = s.wLbl;
+                wl.className = 'text-xs font-mono mt-2 min-h-[16px] ' +
+                    (s.wLbl.includes('✗')||s.wLbl.includes('⚠') ? 'text-red-400' : 'text-slate-400');
+
+                const rl = document.getElementById('right-label');
+                rl.textContent = s.rLbl;
+                rl.className = 'text-xs font-mono mt-2 min-h-[16px] ' +
+                    (s.rLbl.includes('✓') ? 'text-green-400' : 'text-slate-400');
+
+                document.getElementById('rinse-result').style.display   = s.showResult ? 'grid' : 'none';
+                document.getElementById('rinse-next').style.display     = step >= STEPS.length-1 ? 'none' : '';
+                document.getElementById('rinse-restart').style.display  = step >= STEPS.length-1 ? '' : 'none';
+                document.getElementById('rinse-prev').disabled          = step === 0;
+
+                const dotsEl = document.getElementById('rinse-dots');
+                dotsEl.innerHTML = '';
+                STEPS.forEach(function(_, i) {
+                    const d = document.createElement('button');
+                    d.className = 'w-2.5 h-2.5 rounded-full transition-colors ' +
+                        (i===step ? 'bg-blue-600' : i<step ? 'bg-blue-300' : 'bg-slate-300');
+                    d.title = STEPS[i].title;
+                    d.onclick = function(){ currentStep=i; applyStep(i); };
+                    dotsEl.appendChild(d);
+                });
+            }
+
+            function tickParticles(state) {
+                const topY = fY(state.fill);
+                state.particles.forEach(function(p) {
+                    p.x += p.vx + (Math.random()-0.5)*0.45;
+                    p.y += p.vy + (Math.random()-0.5)*0.45;
+                    p.vx *= 0.90; p.vy *= 0.90;
+                    if (p.y < topY+2) { p.y = topY+2; p.vy = Math.abs(p.vy)*0.5; }
+                    if (p.y > BULB_BOT_Y-4) { p.y = BULB_BOT_Y-4; p.vy = -Math.abs(p.vy); }
+                    const mR = innerR(p.y), d = Math.abs(p.x-CX);
+                    if (mR>0 && d>mR) { p.x = CX+(p.x>=CX?1:-1)*(mR-0.5); p.vx = -p.vx*0.5; }
+                });
+            }
+
+            function drawFlask(canvas, state) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (state.fill > 0.002) {
+                    ctx.save();
+                    ctx.clip(FLASK_PATH);
+                    const topY = fY(state.fill);
+                    const g = ctx.createLinearGradient(0, topY, 0, BULB_BOT_Y);
+                    if (state.isStock) {
+                        g.addColorStop(0, 'rgba(59,130,246,0.55)');
+                        g.addColorStop(1, 'rgba(29,78,216,0.75)');
+                    } else {
+                        g.addColorStop(0, 'rgba(186,230,253,0.40)');
+                        g.addColorStop(1, 'rgba(147,197,253,0.55)');
+                    }
+                    ctx.fillStyle = g;
+                    ctx.fillRect(0, topY, canvas.width, canvas.height);
+                    ctx.restore();
+                }
+
+                if (state.showResidue) {
+                    RESIDUE_PTS.forEach(function(p) {
+                        ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2);
+                        ctx.fillStyle = '#f59e0b'; ctx.fill();
+                    });
+                }
+
+                const topY = fY(state.fill);
+                state.particles.forEach(function(p) {
+                    if (p.y < topY-3) return;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI*2);
+                    ctx.fillStyle = '#fbbf24'; ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,0,0,0.22)'; ctx.lineWidth = 0.8; ctx.stroke();
+                });
+
+                ctx.strokeStyle = 'rgba(148,210,235,0.88)'; ctx.lineWidth = 2.5;
+                ctx.stroke(FLASK_PATH);
+
+                ctx.beginPath();
+                ctx.moveTo(CX-NECK_HW-7, GRAD_Y); ctx.lineTo(CX+NECK_HW+7, GRAD_Y);
+                ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.fillStyle = 'rgba(255,255,255,0.50)'; ctx.font = '9px monospace';
+                ctx.fillText('250 cm³', CX+NECK_HW+8, GRAD_Y+4);
+
+                ctx.fillStyle = 'rgba(80,130,165,0.70)';
+                ctx.fillRect(CX-NECK_HW-2, NECK_TOP_Y-9, NECK_HW*2+4, 9);
+            }
+
+            function loop() {
+                if (!simActive) return;
+                [wrongState, rightState].forEach(function(st) {
+                    const diff = st.targetFill - st.fill;
+                    st.fill += diff * 0.04;
+                    if (Math.abs(diff) < 0.0005) st.fill = st.targetFill;
+                    if (st.fill > 0.002) tickParticles(st);
+                });
+                drawFlask(document.getElementById('canvas-wrong'), wrongState);
+                drawFlask(document.getElementById('canvas-right'), rightState);
+                animId = requestAnimationFrame(loop);
+            }
+
+            window.startRinseSim = function() { if (simActive) return; simActive = true; loop(); };
+            window.stopRinseSim  = function() { simActive = false; if (animId) { cancelAnimationFrame(animId); animId = null; } };
+
+            document.getElementById('rinse-next').addEventListener('click', function() {
+                if (currentStep < STEPS.length-1) { currentStep++; applyStep(currentStep); }
+            });
+            document.getElementById('rinse-prev').addEventListener('click', function() {
+                if (currentStep > 0) { currentStep--; applyStep(currentStep); }
+            });
+            document.getElementById('rinse-restart').addEventListener('click', function() {
+                currentStep = 0; initStates(); applyStep(0);
+            });
+
+            initStates();
+            applyStep(0);
+        }());
 
     </script>
 </body>
