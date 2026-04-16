@@ -1041,17 +1041,7 @@
                 return Math.max(0, Math.sqrt(Math.max(0, BULB_R * BULB_R - dy * dy)) - 4);
             }
 
-            const FLASK_PATH = (function () {
-                const p = new Path2D();
-                p.moveTo(CX - NECK_HW, NECK_TOP_Y);
-                p.lineTo(CX - NECK_HW, NECK_BOT_Y);
-                p.bezierCurveTo(CX - NECK_HW, NECK_BOT_Y + 32, CX - BULB_R, BULB_CY - 52, CX - BULB_R, BULB_CY);
-                p.arc(CX, BULB_CY, BULB_R, Math.PI, 0, false);
-                p.bezierCurveTo(CX + BULB_R, BULB_CY - 52, CX + NECK_HW, NECK_BOT_Y + 32, CX + NECK_HW, NECK_BOT_Y);
-                p.lineTo(CX + NECK_HW, NECK_TOP_Y);
-                p.closePath();
-                return p;
-            }());
+
 
             const STEPS = [
                 { title: 'Start: Empty, Clean Flasks',
@@ -1173,27 +1163,50 @@
                 });
             }
 
+            function flaskPath(ctx) {
+                ctx.beginPath();
+                ctx.moveTo(CX - NECK_HW, NECK_TOP_Y);
+                ctx.lineTo(CX - NECK_HW, NECK_BOT_Y);
+                ctx.bezierCurveTo(CX - NECK_HW, NECK_BOT_Y + 32, CX - BULB_R, BULB_CY - 52, CX - BULB_R, BULB_CY);
+                ctx.arc(CX, BULB_CY, BULB_R, Math.PI, 0, false);
+                ctx.bezierCurveTo(CX + BULB_R, BULB_CY - 52, CX + NECK_HW, NECK_BOT_Y + 32, CX + NECK_HW, NECK_BOT_Y);
+                ctx.lineTo(CX + NECK_HW, NECK_TOP_Y);
+                ctx.closePath();
+            }
+
             function drawFlask(canvas, state) {
                 const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const W = canvas.width, H = canvas.height;
 
+                // Canvas background
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, W, H);
+
+                // Flask glass body fill (always visible)
+                flaskPath(ctx);
+                ctx.fillStyle = 'rgba(30,60,100,0.55)';
+                ctx.fill();
+
+                // Liquid fill
                 if (state.fill > 0.002) {
-                    ctx.save();
-                    ctx.clip(FLASK_PATH);
                     const topY = fY(state.fill);
+                    ctx.save();
+                    flaskPath(ctx);
+                    ctx.clip();
                     const g = ctx.createLinearGradient(0, topY, 0, BULB_BOT_Y);
                     if (state.isStock) {
-                        g.addColorStop(0, 'rgba(59,130,246,0.55)');
-                        g.addColorStop(1, 'rgba(29,78,216,0.75)');
+                        g.addColorStop(0, 'rgba(59,130,246,0.80)');
+                        g.addColorStop(1, 'rgba(29,78,216,0.95)');
                     } else {
-                        g.addColorStop(0, 'rgba(186,230,253,0.40)');
-                        g.addColorStop(1, 'rgba(147,197,253,0.55)');
+                        g.addColorStop(0, 'rgba(186,230,253,0.65)');
+                        g.addColorStop(1, 'rgba(147,197,253,0.85)');
                     }
                     ctx.fillStyle = g;
-                    ctx.fillRect(0, topY, canvas.width, canvas.height);
+                    ctx.fillRect(0, topY, W, H);
                     ctx.restore();
                 }
 
+                // Residue dots
                 if (state.showResidue) {
                     RESIDUE_PTS.forEach(function(p) {
                         ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2);
@@ -1201,25 +1214,35 @@
                     });
                 }
 
+                // Particles
                 const topY = fY(state.fill);
                 state.particles.forEach(function(p) {
-                    if (p.y < topY-3) return;
+                    if (p.y < topY - 3) return;
                     ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI*2);
                     ctx.fillStyle = '#fbbf24'; ctx.fill();
-                    ctx.strokeStyle = 'rgba(0,0,0,0.22)'; ctx.lineWidth = 0.8; ctx.stroke();
+                    ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 0.8; ctx.stroke();
                 });
 
-                ctx.strokeStyle = 'rgba(148,210,235,0.88)'; ctx.lineWidth = 2.5;
-                ctx.stroke(FLASK_PATH);
+                // Flask outline
+                flaskPath(ctx);
+                ctx.strokeStyle = '#7dd3fc';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
 
+                // Graduation mark
                 ctx.beginPath();
-                ctx.moveTo(CX-NECK_HW-7, GRAD_Y); ctx.lineTo(CX+NECK_HW+7, GRAD_Y);
-                ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.5; ctx.stroke();
-                ctx.fillStyle = 'rgba(255,255,255,0.50)'; ctx.font = '9px monospace';
-                ctx.fillText('250 cm³', CX+NECK_HW+8, GRAD_Y+4);
+                ctx.moveTo(CX - NECK_HW - 8, GRAD_Y);
+                ctx.lineTo(CX + NECK_HW + 8, GRAD_Y);
+                ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.fillStyle = 'rgba(255,255,255,0.70)';
+                ctx.font = '9px monospace';
+                ctx.fillText('250 cm\u00b3', CX + NECK_HW + 10, GRAD_Y + 4);
 
-                ctx.fillStyle = 'rgba(80,130,165,0.70)';
-                ctx.fillRect(CX-NECK_HW-2, NECK_TOP_Y-9, NECK_HW*2+4, 9);
+                // Stopper
+                ctx.fillStyle = 'rgba(100,160,200,0.80)';
+                ctx.fillRect(CX - NECK_HW - 2, NECK_TOP_Y - 10, NECK_HW * 2 + 4, 10);
             }
 
             function loop() {
