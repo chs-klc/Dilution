@@ -1175,12 +1175,19 @@
             }
 
             function drawFlask(canvas, state) {
-                const ctx = canvas.getContext('2d');
-                const W = canvas.width, H = canvas.height;
+                var ctx = canvas.getContext('2d');
+                var W = canvas.width, H = canvas.height;
+
+                // DEBUG: bright background to prove drawing works
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '16px sans-serif';
+                ctx.fillText('W=' + W + ' H=' + H + ' fill=' + state.fill.toFixed(2), 5, 20);
 
                 // Canvas background
                 ctx.fillStyle = '#0f172a';
-                ctx.fillRect(0, 0, W, H);
+                ctx.fillRect(10, 40, W - 20, H - 50);
 
                 // Flask glass body fill (always visible)
                 flaskPath(ctx);
@@ -1275,11 +1282,17 @@
             applyStep(0);
             // Draw initial static frame so flasks are visible before the animation starts
             (function () {
-                const wc = document.getElementById('canvas-wrong');
-                const rc = document.getElementById('canvas-right');
-                console.log('RINSE INIT: wc=', wc, 'rc=', rc, 'wc.width=', wc&&wc.width, 'wc.height=', wc&&wc.height);
-                console.log('RINSE wrongState=', JSON.stringify(wrongState));
-                if (wc && rc) { drawFlask(wc, wrongState); drawFlask(rc, rightState); console.log('RINSE DRAW DONE'); }
+                var wc = document.getElementById('canvas-wrong');
+                var rc = document.getElementById('canvas-right');
+                // DEBUG: draw bright red rect to confirm canvas works
+                if (wc) {
+                    var c = wc.getContext('2d');
+                    c.fillStyle = 'red';
+                    c.fillRect(0, 0, wc.width, wc.height);
+                    c.fillStyle = 'white'; c.font = '20px sans-serif';
+                    c.fillText('CANVAS OK w=' + wc.width + ' h=' + wc.height, 10, 30);
+                }
+                if (wc && rc) { drawFlask(wc, wrongState); drawFlask(rc, rightState); }
             }());
         }());
 
