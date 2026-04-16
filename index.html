@@ -1277,7 +1277,9 @@
             (function () {
                 const wc = document.getElementById('canvas-wrong');
                 const rc = document.getElementById('canvas-right');
-                if (wc && rc) { drawFlask(wc, wrongState); drawFlask(rc, rightState); }
+                console.log('RINSE INIT: wc=', wc, 'rc=', rc, 'wc.width=', wc&&wc.width, 'wc.height=', wc&&wc.height);
+                console.log('RINSE wrongState=', JSON.stringify(wrongState));
+                if (wc && rc) { drawFlask(wc, wrongState); drawFlask(rc, rightState); console.log('RINSE DRAW DONE'); }
             }());
         }());
 
