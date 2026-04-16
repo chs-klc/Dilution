@@ -770,7 +770,7 @@
             const liqMat = new THREE.MeshPhongMaterial({
                 color: 0x2563eb,
                 transparent: true,
-                opacity: 0.85,
+                opacity: 0.45,
                 shininess: 60,
                 clippingPlanes: [window.clipPlane]
             });
@@ -803,10 +803,9 @@
             pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
             particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
                 color: 0xfbbf24,   // bright gold — stands out against blue liquid
-                size: 0.32,
-                transparent: true,
-                opacity: 1.0,
-                clippingPlanes: [window.clipPlane]
+                size: 0.55,
+                transparent: false,
+                sizeAttenuation: true
             }));
             particles.renderOrder = 3;
             group.add(particles);
