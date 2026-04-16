@@ -841,14 +841,14 @@
                 // fillY goes from 1.0 (v2=25) to 13.0 (v2=250)
                 const spreadFactor = Math.max(0, Math.min(1, (fillY - 1.0) / 12.0));
 
-                // Max radius particles can reach scales with spread
-                const maxBulbR = 0.8 + spreadFactor * 2.5;   // 0.8 → 3.3
-                const yTop     = 0.5 + spreadFactor * (fillY - 0.5); // bottom cluster → full liquid height
+                // Max radius particles can reach scales with spread — use square root for faster early expansion
+                const maxBulbR = 0.8 + Math.sqrt(spreadFactor) * 2.5;   // expands quickly at first
+                const yTop     = 0.5 + Math.sqrt(spreadFactor) * (fillY - 0.5); // height follows same curve
 
                 const pos = particles.geometry.attributes.position.array;
                 for (let i = 0; i < particleCount; i++) {
-                    // Brownian motion — faster when spread is larger (more energetic dilute)
-                    const jitter = 0.06 + spreadFactor * 0.10;
+                    // Much faster jitter so particles relocate quickly
+                    const jitter = 0.18 + spreadFactor * 0.22;
                     pos[i*3]   += (Math.random() - 0.5) * jitter;
                     pos[i*3+1] += (Math.random() - 0.5) * jitter;
                     pos[i*3+2] += (Math.random() - 0.5) * jitter;
